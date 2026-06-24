@@ -4,6 +4,9 @@
 #
 # Tests PT recording by sending RSP packets through GDB's own
 # RemoteTargetConnection.send_packet() API instead of raw sockets.
+# The test includes a disconnect/reconnect sequence via GDB's own
+# CLI (disconnect + target remote) to verify cleanup state.
+#
 # Requires Intel PT hardware and a QEMU with PT gdbstub support.
 #
 # Usage:
@@ -52,8 +55,8 @@ do_test() {
     local gdb_out=$(mktemp /tmp/pt-gdb-XXXX.out)
 
     # Use -S to suspend QEMU at the reset vector so the CPU state is
-    # deterministic when GDB connects (no race with --no-suspend).
-    # Raw RSP 's' packets (send_packet via GDB) work from any PC.
+    # deterministic when GDB connects.  Raw RSP 's' packets (via
+    # send_packet) work from any PC.
     $QEMU \
         --no-reboot -nodefaults \
         -global kvm-pit.lost_tick_policy=discard \
